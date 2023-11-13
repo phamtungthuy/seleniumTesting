@@ -10,7 +10,7 @@ Before you can start performing **Python** automation testing with **Selenium**,
 **Step 1:** Clone the LambdaTest’s python-selenium-sample repository and navigate to the code directory as shown below:
 
 ```bash
-git clone https://github.com/LambdaTest/python-selenium-sample
+git clone https://github.com/phamtungthuy/seleniumTesting.git
 cd webdriver
 ```
 
