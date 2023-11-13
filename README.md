@@ -30,6 +30,10 @@ pip install selenium
 
 Copy file .env.sample to .env and fill value to variables
 
+In .env file:
+CHROME_DRIVER_LOCATION= (location of chrome driver in your computer)
+LUMA_WEBSITE=https://magento.softwaretestingboard.com/
+
 ## Run Your First Test
 ```bash
 python main.py
