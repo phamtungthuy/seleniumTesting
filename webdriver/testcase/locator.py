@@ -37,3 +37,25 @@ class LumaManageAddressPageLocators(object):
 
 class LumaCreateAddressPageLocators(object):
     CREATE_BUTTON = (By.CLASS_NAME, "save")
+
+class LumaResultSearchPageLocators(object):
+    CARD_IMAGE = (By.CLASS_NAME, "product-image-photo")
+
+class LumaCartPageLocators(object):
+    SIZE = (By.CSS_SELECTOR, ".size .swatch-attribute-options div")
+    COLOR = (By.CSS_SELECTOR, ".color .swatch-attribute-options div")
+    ADD_CART = (By.CLASS_NAME, "tocart")
+    SHOW_CART = (By.CLASS_NAME, "showcart")
+    VIEW_CART = (By.CLASS_NAME, "viewcart")
+    SHOW_REVIEW = (By.ID, "tab-label-reviews")
+    STAR = (By.ID, "Rating_5_label")
+    SUBMIT_BUTTON = (By.CLASS_NAME, "submit")
+
+
+class LumaShoppingCartLocators(object):
+    DELETE_CART = (By.CLASS_NAME, "action-delete")
+    CHECKOUT_BUTTON = (By.CSS_SELECTOR, "button.checkout")
+
+class LumaCheckoutPageLocators(object):
+    CONTINUE_BUTTON = (By.CLASS_NAME, "continue")
+    CHECKOUT_BUTTON = (By.CLASS_NAME, "checkout")

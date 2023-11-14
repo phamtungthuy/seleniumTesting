@@ -1,13 +1,18 @@
 from testcase.locator import *
 from testcase.element import *
-
-
+import random
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
 class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
     
 class LumaMainPage(BasePage):
     
+    search = BaseSearchElement("q")
+
     def go_to_account_page(self):
         switchButton = self.driver.find_element(*LumaMainPageLocators.SWITCH_BUTTON)
         switchButton.click()
@@ -21,6 +26,7 @@ class LumaMainPage(BasePage):
     def go_to_login_page(self):
         element = self.driver.find_element(*LumaMainPageLocators.LOGIN_LINK)
         element.click()
+
 
     def is_title_matches(self):
         return "Home Page" in self.driver.title
@@ -139,6 +145,8 @@ class LumaManageAddressPage(BasePage):
             self.driver.execute_script("arguments[0].click()", deleteButton)    
 
     def accept_delete_address(self):
+        WebDriverWait(self.driver, 5).until(
+            lambda driver: driver.find_element(*LumaManageAddressPageLocators.ACCEPT_BUTTON))
         acceptButton = self.driver.find_element(*LumaManageAddressPageLocators.ACCEPT_BUTTON)
         if acceptButton:
             self.driver.execute_script("arguments[0].click()", acceptButton)
@@ -175,3 +183,132 @@ class LumaCreateNewAddressPage(BasePage):
 
     def is_title_matches(self):
         return "Add New Address" in self.driver.title
+    
+class LumaResultSearchPage(BasePage):
+    search = BaseSearchElement("q")
+
+    def go_to_random_cart_page(self):
+        card_images = self.driver.find_elements(*LumaResultSearchPageLocators.CARD_IMAGE)
+        card_image = random.choice(card_images)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", card_image)
+        ActionChains(self.driver).move_to_element(card_image).perform()
+        self.driver.execute_script("arguments[0].click();", card_image)
+
+
+    def is_title_matches(self):
+        return "Search results" in self.driver.title
+    
+class LumaCartPage(BasePage):
+    search = BaseSearchElement("q")
+    quantity = BaseInputElement("qty")
+    nickname = BaseInputElement("nickname_field")
+    summary = BaseInputElement("summary_field")
+    review = BaseInputElement("review_field")
+
+    def add_cart(self):
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCartPageLocators.SIZE))
+        sizes = self.driver.find_elements(*LumaCartPageLocators.SIZE)
+        self.driver.execute_script("arguments[0].click();", random.choice(sizes))
+
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCartPageLocators.COLOR))
+        colors = self.driver.find_elements(*LumaCartPageLocators.COLOR)
+        self.driver.execute_script("arguments[0].click();", random.choice(colors))
+
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCartPageLocators.ADD_CART))
+        self.quantity = str(random.randint(1, 10))
+
+        addButton = self.driver.find_element(*LumaCartPageLocators.ADD_CART)
+        addButton.click()
+
+    def is_added_successfully(self):
+        success_messages = ["message-success"]
+        if any(success_message in self.driver.page_source for success_message in success_messages):
+            return True
+        error_messages = ["message-error"]
+        return all(error_message not in self.driver.page_source for error_message in error_messages)
+    
+    def move_to_shopping_cart(self):
+        showCart = self.driver.find_element(*LumaCartPageLocators.SHOW_CART)
+        self.driver.execute_script("arguments[0].click();", showCart)
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCartPageLocators.VIEW_CART))
+        viewCart = self.driver.find_element(*LumaCartPageLocators.VIEW_CART)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", viewCart)
+        self.driver.execute_script("arguments[0].click();", viewCart)
+
+    def display_review(self):
+        showReview = self.driver.find_element(*LumaCartPageLocators.SHOW_REVIEW)
+        ActionChains(self.driver).move_to_element(showReview).perform()
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", showReview)
+        self.driver.execute_script("arguments[0].click();", showReview)
+
+    def review_comment(self):
+        starRating = self.driver.find_element(*LumaCartPageLocators.STAR)
+        ActionChains(self.driver).move_to_element(starRating).perform()
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", starRating)
+        self.driver.execute_script("arguments[0].click();", starRating)
+
+        submitButton = self.driver.find_element(*LumaCartPageLocators.SUBMIT_BUTTON)
+        ActionChains(self.driver).move_to_element(submitButton).perform()
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submitButton)
+        self.driver.execute_script("arguments[0].click();", submitButton)
+
+    def is_reviewed_successfully(self):
+        success_messages = ["message-success"]
+        if any(success_message in self.driver.page_source for success_message in success_messages):
+            return True
+        error_messages = ["message-error"]
+        return all(error_message not in self.driver.page_source for error_message in error_messages)
+
+class LumaShoppingCartPage(BasePage):
+    def is_title_matches(self):
+        return "Shopping Cart" in self.driver.title
+    
+    def delete_all_carts(self):
+        while(len(self.driver.find_elements(*LumaShoppingCartLocators.DELETE_CART)) != 0):
+            deleteCart = self.driver.find_element(*LumaShoppingCartLocators.DELETE_CART)
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", deleteCart)
+            self.driver.execute_script("arguments[0].click();", deleteCart)
+        
+    def is_deleted_all_carts(self):
+        if(len(self.driver.find_elements(*LumaShoppingCartLocators.DELETE_CART)) != 0):
+            return False
+        return True
+            
+    def move_to_checkout_page(self):
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaShoppingCartLocators.CHECKOUT_BUTTON))
+        checkoutButton = self.driver.find_element(*LumaShoppingCartLocators.CHECKOUT_BUTTON)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", checkoutButton)
+        self.driver.execute_script("arguments[0].click();", checkoutButton)
+
+class LumaCheckoutPage(BasePage):
+    def is_title_matches(self):
+        return "Checkout" in self.driver.title
+    
+    def continue_checkout(self):
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCheckoutPageLocators.CONTINUE_BUTTON))
+        continueButton = self.driver.find_element(*LumaCheckoutPageLocators.CONTINUE_BUTTON)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", continueButton)
+        self.driver.execute_script("arguments[0].click();", continueButton)
+
+    def complete_checkout(self):
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCheckoutPageLocators.CHECKOUT_BUTTON))
+        checkoutButton = self.driver.find_element(*LumaCheckoutPageLocators.CHECKOUT_BUTTON)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", checkoutButton)
+        self.driver.execute_script("arguments[0].click();", checkoutButton)
+        
+    def is_checkout_successful(self):
+        try:
+            WebDriverWait(self.driver, 10).until(EC.title_contains("Success Page"))
+            return "Success Page" in self.driver.title
+        
+        except:
+            return False
+        
+        
