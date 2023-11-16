@@ -1,4 +1,7 @@
 # seleniumTesting
+## Note
+The website https://magento.softwaretestingboard.com/ is unstable, so if it affects running time too much, you can comment these test cases relating to it temporarily.
+You can use other test cases instead
 ## Prerequisites
 
 Before you can start performing **Python** automation testing with **Selenium**, you would need to:
