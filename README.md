@@ -55,6 +55,7 @@ python main.py
 **Step 1:** Go to [Selenium IDE](https://chromewebstore.google.com/detail/selenium-ide/mooikfkahbdckldjjndioackbalphokd?pli=1)
 
 Click **Add extension**
+
 **Step 2:** Open IDE extension
 
 import seleniumIDE.side from seleniumIDE folder to seleniumIDE extension.
@@ -70,6 +71,7 @@ After that, you need to install [Docker compose](https://docs.docker.com/compose
 ```bash
 cd seleniumGRID
 ```
+
 **Step 2:** Create file .env.
 
 Copy file .env.sample to .env and fill value to variables
