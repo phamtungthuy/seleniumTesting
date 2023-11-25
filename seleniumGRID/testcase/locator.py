@@ -40,6 +40,7 @@ class LumaCreateAddressPageLocators(object):
 
 class LumaResultSearchPageLocators(object):
     CARD_IMAGE = (By.CLASS_NAME, "product-image-photo")
+    LOGO = (By.CLASS_NAME, "logo")
 
 class LumaCartPageLocators(object):
     SIZE = (By.CSS_SELECTOR, ".size .swatch-attribute-options div")
@@ -55,6 +56,7 @@ class LumaCartPageLocators(object):
 class LumaShoppingCartLocators(object):
     DELETE_CART = (By.CLASS_NAME, "action-delete")
     CHECKOUT_BUTTON = (By.CSS_SELECTOR, "button.checkout")
+    
 
 class LumaCheckoutPageLocators(object):
     CONTINUE_BUTTON = (By.CLASS_NAME, "continue")

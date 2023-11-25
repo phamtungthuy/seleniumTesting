@@ -27,7 +27,27 @@ class LumaMainPage(BasePage):
         element = self.driver.find_element(*LumaMainPageLocators.LOGIN_LINK)
         element.click()
 
+    def can_move_to_checkout_page(self):
+        try:
+            showCart = self.driver.find_element(*LumaCartPageLocators.SHOW_CART)
+            self.driver.execute_script("arguments[0].click();", showCart)
+            WebDriverWait(self.driver, 3).until(
+                lambda driver: driver.find_element(*LumaCartPageLocators.VIEW_CART))
+            viewCart = self.driver.find_element(*LumaCartPageLocators.VIEW_CART)
+            if viewCart:
+                return True
+            else: return False
+        except:
+            return False
 
+    def move_to_shopping_cart_page(self):
+        showCart = self.driver.find_element(*LumaCartPageLocators.SHOW_CART)
+        self.driver.execute_script("arguments[0].click();", showCart)
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaCartPageLocators.VIEW_CART))
+        viewCart = self.driver.find_element(*LumaCartPageLocators.VIEW_CART)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", viewCart)
+        self.driver.execute_script("arguments[0].click();", viewCart)
     def is_title_matches(self):
         return "Home Page" in self.driver.title
     
@@ -46,7 +66,8 @@ class LumaSignupPage(BasePage):
         if "Create New Customer Account" not in self.driver.title:
             return True
         error_messages = ["Please enter the same value again.", "This is a required field.", "Please enter a valid email address", "message-error"]
-        return all(error_message not in self.driver.page_source for error_message in error_messages)
+        return all(error_message not in self.driver.page_source for error_message in error_messages) \
+            and self.driver.current_url != "https://magento.softwaretestingboard.com/customer/account/create/"
     
     def is_title_matches(self):
         return "Create New Customer Account" in self.driver.title
@@ -63,7 +84,7 @@ class LumaLoginPage(BasePage):
         if "Customer Login" not in self.driver.title:
             return True
         error_messages = ["message-error", "This is a required field.", "Please enter a valid email address"]
-        return all(error_message not in self.driver.page_source for error_message in error_messages)
+        return all(error_message not in self.driver.page_source for error_message in error_messages) and self.driver.current_url == "https://magento.softwaretestingboard.com/"
     
     def is_title_matches(self):
         return "Customer Login" in self.driver.title
@@ -198,12 +219,21 @@ class LumaResultSearchPage(BasePage):
     def is_title_matches(self):
         return "Search results" in self.driver.title
     
+    def move_to_main_page(self):
+        WebDriverWait(self.driver, 100).until(
+            lambda driver: driver.find_element(*LumaResultSearchPageLocators.LOGO)
+        )
+        logo = self.driver.find_element(*LumaResultSearchPageLocators.LOGO)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", logo)
+        self.driver.execute_script("arguments[0].click();", logo)
+    
 class LumaCartPage(BasePage):
     search = BaseSearchElement("q")
     quantity = BaseInputElement("qty")
     nickname = BaseInputElement("nickname_field")
     summary = BaseInputElement("summary_field")
     review = BaseInputElement("review_field")
+
 
     def add_cart(self):
         WebDriverWait(self.driver, 100).until(
@@ -284,6 +314,9 @@ class LumaShoppingCartPage(BasePage):
         checkoutButton = self.driver.find_element(*LumaShoppingCartLocators.CHECKOUT_BUTTON)
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", checkoutButton)
         self.driver.execute_script("arguments[0].click();", checkoutButton)
+        
+
+        
 
 class LumaCheckoutPage(BasePage):
     def is_title_matches(self):
